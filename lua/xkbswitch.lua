@@ -2,6 +2,7 @@ local M = {}
 
 -- Default parameters
 M.events_get_focus = {'FocusGained', 'CmdlineLeave'}
+M.events_lose_focus = {'FocusLost', 'InsertEnter'}
 
 -- nvim_create_autocmd shortcut
 local autocmd = vim.api.nvim_create_autocmd
@@ -78,6 +79,10 @@ function M.setup(opts)
         M.events_get_focus = opts.events_get_focus
     end
 
+    if opts.events_lose_focus then
+        M.events_lose_focus = opts.events_lose_focus
+    end
+
     -- When leaving Insert Mode:
     -- 1. Save the current layout
     -- 2. Switch to the US layout
@@ -113,11 +118,10 @@ function M.setup(opts)
         }
     )
 
-    -- When Neovim loses focus
-    -- When entering Insert Mode:
+    -- When Neovim loses focus:
     -- 1. Switch to the previously saved layout
     autocmd(
-        {'FocusLost', 'InsertEnter'},
+        M.events_lose_focus,
         {
             pattern = "*",
             callback = function()
